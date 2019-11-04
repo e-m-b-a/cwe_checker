@@ -120,7 +120,7 @@ module GraphBuilder = struct
       let untaken_conditional_jump = match Seq.to_list (Term.enum jmp_t source) with (* TODO: write test case to check whether this works as intended *)
         | _ :: [] -> None
         | first_jmp :: _second_jmp :: [] ->
-            if jump_term = first_jmp then
+            if (Term.tid jump_term) = (Term.tid first_jmp) then
               None
             else (* TODO: add a check that first_jmp isn't an unconditional jump *)
               (Some first_jmp)
@@ -129,7 +129,9 @@ module GraphBuilder = struct
       | Goto _ ->
           let  new_edge = Graph.Edge.create (BlkEnd source) (BlkStart destination) (Jump (jump_term, untaken_conditional_jump)) in
           Graph.Edge.insert new_edge graph
-      | Call _ | Ret _ | Int _ -> failwith "Error: Unexpected edge type in subfunction control flow graph"
+      | Call _ -> graph (* call edges are not handled in this function *)
+      | Ret _ -> failwith "Error: Unexpected edge type (ret) in subfunction control flow graph"
+      | Int _ -> failwith "Error: Unexpected edge type (int) in subfunction control flow graph"
     ) in
     { builder with graph = graph;
                    call_return_map = Map.set builder.call_return_map ~key:sub ~data:!return_list;
@@ -169,6 +171,7 @@ type 'a value =
 module InterproceduralFixpointProblem (FP : ProblemSig) : Fixpoint.ProblemSig with type t = FP.t value
                                                                                and type Node.t = Node.t
                                                                                and type EdgeLabel.t = EdgeLabel.t
+                                                                               and type BapGraph.t = Graph.t
 = struct
   type t = FP.t value
     (*  | Value of FP.t
@@ -231,7 +234,8 @@ end
 
 
 
-module InterproceduralFixpoint (FP: ProblemSig) : Fixpoint.FixpointSig with type node_label = Node.t
-                                                                                               and type edge_label = EdgeLabel.t
-                                                                                               and type value_type = FP.t value
+module InterproceduralFixpoint (FP: ProblemSig) : Fixpoint.FixpointSig with type node_label := Node.t
+                                                                        and type edge_label := EdgeLabel.t
+                                                                        and type value_type := FP.t value
+                                                                        and type BapGraph.t := Graph.t
   = Fixpoint.Fixpoint(InterproceduralFixpointProblem(FP))

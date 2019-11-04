@@ -5,11 +5,13 @@ open Core_kernel
 let run_tests project =
   Type_inference_test.example_project := Some(project);
   Cconv_test.example_project := Some(project);
+  Fixpoint_test.example_project := Some(project);
   Alcotest.run "Unit tests" ~argv:[|"DoNotComplainWhenRunAsABapPlugin";"--color=always";|] [
     "Mem_region_tests", Mem_region_test.tests;
     "Type_inference_tests", Type_inference_test.tests;
     "Cconv_tests", Cconv_test.tests;
     "CWE_560_tests", Cwe_560_test.tests;
+    "Fixpoint_tests", Fixpoint_test.tests;
      ]
 
 let () =
