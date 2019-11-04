@@ -174,9 +174,6 @@ module InterproceduralFixpointProblem (FP : ProblemSig) : Fixpoint.ProblemSig wi
                                                                                and type BapGraph.t = Graph.t
 = struct
   type t = FP.t value
-    (*  | Value of FP.t
-    | CallReturnCombinator of { call_value: FP.t Option.t;
-      return_value: FP.t Option.t; } *)
 
   let unpack_value (value: t) : FP.t =
     match value with
