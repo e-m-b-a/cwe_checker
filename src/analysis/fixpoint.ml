@@ -34,16 +34,15 @@ module type FixpointSig = sig
 end
 
 module Fixpoint (FP : ProblemSig) : FixpointSig
-  with type node_label = FP.Node.t and type edge_label = FP.EdgeLabel.t and type value_type = FP.t
+  with type node_label := FP.Node.t
+   and type edge_label := FP.EdgeLabel.t
+   and type value_type := FP.t
+   and type BapGraph.t := FP.BapGraph.t
 = struct
 
   module BapGraph = FP.BapGraph
   module OcamlGraph = Graphlib.Std.Graphlib.To_ocamlgraph(BapGraph)
   module TopologicalGraph = Graph.Topological.Make(OcamlGraph)
-
-  type node_label = FP.Node.t
-  type edge_label = FP.EdgeLabel.t
-  type value_type = FP.t
 
   type t = {
     graph: BapGraph.t;
@@ -54,7 +53,7 @@ module Fixpoint (FP : ProblemSig) : FixpointSig
     worklist: Int.Set.t;
   }
 
-  let empty ?default (graph: BapGraph.t) : t =
+  let empty ?default (graph: FP.BapGraph.t) : t =
     let nodes_list = TopologicalGraph.fold (fun node node_list -> node :: node_list) graph [] in
     let nodes_topological_order = Array.of_list (List.rev nodes_list) in (* TODO: test out correct ordering here! *)
     let node_to_index_map = Array.foldi nodes_topological_order ~init:FP.Node.Map.empty ~f:(fun index map elem -> Map.set map ~key:elem ~data:index) in
@@ -118,19 +117,19 @@ module Fixpoint (FP : ProblemSig) : FixpointSig
           let current_node_index = Set.min_elt_exn !solution.worklist in
           solution := update_node !solution current_node_index
         done
-    | Some max ->
+    | Some maximum ->
         let steps = Array.init (Array.length !solution.nodes_topological_order) ~f:(fun _i -> 0) in
-        while false = Set.is_empty !solution.worklist do
+        while false = Set.is_empty !solution.worklist do (
           let current_node_index = Set.min_elt_exn !solution.worklist in
-          if steps.(current_node_index) >= max then
+          if steps.(current_node_index) >= maximum then
             solution := { !solution with worklist = Set.remove !solution.worklist current_node_index}
-          else
+          else (
             steps.(current_node_index) <- steps.(current_node_index) + 1;
-            solution := update_node !solution current_node_index
-        done;
+            solution := update_node !solution current_node_index )
+        ) done;
         (* we add all nodes that reached max_steps back into the worklist *)
         let max_steps_reached = Array.filter_mapi steps ~f:(fun index steps ->
-          if steps >= max then
+          if steps >= maximum then
             Some index
           else
             None ) in

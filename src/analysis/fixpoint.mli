@@ -110,6 +110,7 @@ end
 
 
 (** The fixpoint functor. Given a module satisfying the {!ProblemSig} signature it generates a fixpoint module that is used to compute the fixpoint. *)
-module Fixpoint (FP : ProblemSig) : FixpointSig with type node_label = FP.Node.t
-                                                      and type edge_label = FP.EdgeLabel.t
-                                                      and type value_type = FP.t
+module Fixpoint (FP : ProblemSig) : FixpointSig with type node_label := FP.Node.t
+                                                      and type edge_label := FP.EdgeLabel.t
+                                                      and type value_type := FP.t
+                                                      and type BapGraph.t := FP.BapGraph.t

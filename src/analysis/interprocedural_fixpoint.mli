@@ -17,7 +17,7 @@
 
     TODO:
     - Indirect function calls are ignored right now. A mechanism to specify targets for indirect function calls needs to be implemented.
-    - Interrupts are not handled at the moment, i.e. there are no edges added to the control flow graph for interrupts.      
+    - Interrupts are not handled at the moment, i.e. there are no edges added to the control flow graph for interrupts.
 *)
 
 open Bap.Std
@@ -130,6 +130,7 @@ end
 
     The corresponding fixpoint can be computed with the compute function of the returned fixpoint module.
 *)
-module InterproceduralFixpoint (FP: ProblemSig) : Fixpoint.FixpointSig with type node_label = Node.t
-                                                         and type edge_label = EdgeLabel.t
-                                                         and type value_type = FP.t value
+module InterproceduralFixpoint (FP: ProblemSig) : Fixpoint.FixpointSig with type node_label := Node.t
+                                                                        and type edge_label := EdgeLabel.t
+                                                                        and type value_type := FP.t value
+                                                                        and type BapGraph.t := Graph.t
