@@ -130,7 +130,7 @@ end
 
     The corresponding fixpoint can be computed with the compute function of the returned fixpoint module.
 *)
-module InterproceduralFixpoint (FP: ProblemSig) : Fixpoint.FixpointSig with type node_label := Node.t
-                                                                        and type edge_label := EdgeLabel.t
+module Make (FP: ProblemSig) : Fixpoint.FixpointSig with type Graph.node := Node.t
+                                                                        and type Graph.Edge.label := EdgeLabel.t
                                                                         and type value_type := FP.t value
-                                                                        and type BapGraph.t := Graph.t
+                                                                        and type Graph.t := Graph.t
