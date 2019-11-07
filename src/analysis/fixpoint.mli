@@ -37,7 +37,7 @@ module type ProblemSig = sig
         Graphlib.Std.Graphlib.Make(Node)(EdgeLabel)
       ]}
   *)
-  module BapGraph: Graphlib.Std.Graph with type node = Node.t and type Edge.label = EdgeLabel.t
+  module Graph: Graphlib.Std.Graph with type node = Node.t and type Edge.label = EdgeLabel.t
 
   (** The merge function used to merge different values for a node into one value. *)
   val merge: t -> t -> t
@@ -49,7 +49,7 @@ module type ProblemSig = sig
       The function can return none to prevent any modification of the target node.
       This is useful when edges may be detected to be unreachable during analysis.
   *)
-  val update_edge: t -> BapGraph.Edge.t -> t Option.t
+  val update_edge: t -> Graph.Edge.t -> t Option.t
 end
 
 
@@ -69,35 +69,29 @@ module type FixpointSig = sig
   *)
   type t
 
-  (** The type of the nodes of the corresponding graph. *)
-  type node_label
-
-  (** The type of the edge label of the corresponding graph. *)
-  type edge_label
-
   (** The type of the values at each node. this is the type of the corresponding fixpoint problem. *)
   type value_type
 
-  module BapGraph: Graphlib.Std.Graph with type node = node_label and type Edge.label = edge_label
+  module Graph: Graphlib.Std.Graph
 
   (** Generate an empty fixpoint solution for a graph.
 
       If there is no default value, the corresponding worklist will also be empty.
       If there is a default value, all nodes will be contained in the worklist, since there is a possibly unstabilized value at each node.
   *)
-  val empty: ?default:value_type -> BapGraph.t -> t
+  val empty: ?default:value_type -> Graph.t -> t
 
   (** Get the value of the fixpoint algorithm at a node. *)
-  val get_node_value: t -> node_label -> value_type Option.t
+  val get_node_value: t -> Graph.node -> value_type Option.t
 
   (** Set the value at a node.
 
       This also adds the node to the worklist, since the new value may not be stable yet.
       If the fixpoint module has no default value for nodes, this is the only way to add initial values and to add nodes to the worklist. *)
-  val set_node_value: t -> node_label -> value_type -> t
+  val set_node_value: t -> Graph.node -> value_type -> t
 
   (** Get a list of all nodes for which the algorithm did not stabilize yet. *)
-  val get_worklist: t -> node_label List.t
+  val get_worklist: t -> Graph.node List.t
 
   (** Run the fixpoint algorithm.
 
@@ -110,7 +104,7 @@ end
 
 
 (** The fixpoint functor. Given a module satisfying the {!ProblemSig} signature it generates a fixpoint module that is used to compute the fixpoint. *)
-module Fixpoint (FP : ProblemSig) : FixpointSig with type node_label := FP.Node.t
-                                                      and type edge_label := FP.EdgeLabel.t
+module Make (FP : ProblemSig) : FixpointSig with type Graph.node := FP.Node.t
+                                                      and type Graph.Edge.label := FP.EdgeLabel.t
                                                       and type value_type := FP.t
-                                                      and type BapGraph.t := FP.BapGraph.t
+                                                      and type Graph.t := FP.Graph.t

@@ -171,7 +171,7 @@ type 'a value =
 module InterproceduralFixpointProblem (FP : ProblemSig) : Fixpoint.ProblemSig with type t = FP.t value
                                                                                and type Node.t = Node.t
                                                                                and type EdgeLabel.t = EdgeLabel.t
-                                                                               and type BapGraph.t = Graph.t
+                                                                               and type Graph.t = Graph.t
 = struct
   type t = FP.t value
 
@@ -182,7 +182,7 @@ module InterproceduralFixpointProblem (FP : ProblemSig) : Fixpoint.ProblemSig wi
 
   module Node = Node
   module EdgeLabel = EdgeLabel
-  module BapGraph = Graph
+  module Graph = Graph
 
   let merge (value1: t) (value2: t) : t =
     match (value1, value2) with
@@ -199,7 +199,7 @@ module InterproceduralFixpointProblem (FP : ProblemSig) : Fixpoint.ProblemSig wi
         (Option.equal FP.equal comb1.call_value comb2.call_value) && (Option.equal FP.equal comb1.return_value comb2.return_value)
     | _ -> false
 
-  let update_edge (value: t) (edge: BapGraph.Edge.t) : t Option.t =
+  let update_edge (value: t) (edge: Graph.Edge.t) : t Option.t =
     match Graph.Edge.label edge with
     | Block ->
         let block = match Graph.Edge.src edge with
@@ -231,8 +231,8 @@ end
 
 
 
-module InterproceduralFixpoint (FP: ProblemSig) : Fixpoint.FixpointSig with type node_label := Node.t
-                                                                        and type edge_label := EdgeLabel.t
+module Make (FP: ProblemSig) : Fixpoint.FixpointSig with type Graph.node := Node.t
+                                                                        and type Graph.Edge.label := EdgeLabel.t
                                                                         and type value_type := FP.t value
-                                                                        and type BapGraph.t := Graph.t
-  = Fixpoint.Fixpoint(InterproceduralFixpointProblem(FP))
+                                                                        and type Graph.t := Graph.t
+  = Fixpoint.Make(InterproceduralFixpointProblem(FP))

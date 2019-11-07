@@ -17,6 +17,7 @@ depends: [
   "yojson" {>= "1.6.0"}
   "bap" {>= "1.6" & < "2.0"}
   "core_kernel" {>= "v0.11" & < "v0.12"}
+  "ocamlgraph" {>= "1.8.8"}
   "ppx_jane" {>= "v0.11" & < "v0.12"}
   "ppx_deriving_yojson" {>= "3.5.1"}
   "odoc" {>= "1.4"}

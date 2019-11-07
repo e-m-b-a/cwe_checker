@@ -17,21 +17,21 @@ module TestProblem = struct
 
   module Node = Int
   module EdgeLabel = Int
-  module BapGraph = TestGraph
+  module Graph = TestGraph
 
   let merge (val1: Int.t) (val2: Int.t) : Int.t =
     Int.min val1 val2
 
   let equal = Int.equal
 
-  let update_edge (value: t) (edge: BapGraph.Edge.t) : t Option.t =
-    Some (value + BapGraph.Edge.label edge)
+  let update_edge (value: t) (edge: Graph.Edge.t) : t Option.t =
+    Some (value + Graph.Edge.label edge)
 end
 
 
 let test_shortest_path () =
-  let module FP = Fixpoint.Fixpoint(TestProblem) in
-  let module G = FP.BapGraph in
+  let module FP = Fixpoint.Make(TestProblem) in
+  let module G = FP.Graph in
   let graph = ref G.empty in
   let () = for i = 1 to 10 do
       graph := G.Edge.insert (G.Edge.create i (i + 1) i) !graph
@@ -98,7 +98,7 @@ end
 
 let test_call_depth () =
   let project = Option.value_exn !example_project in
-  let module FP = Interprocedural_fixpoint.InterproceduralFixpoint(CallDepthTest) in
+  let module FP = Interprocedural_fixpoint.Make(CallDepthTest) in
   let graph = Interprocedural_fixpoint.generate_fixpoint_cfg project in
   let problem = FP.empty graph in
   let entry_fns = Symbol_utils.get_program_entry_points (Project.program project) in
