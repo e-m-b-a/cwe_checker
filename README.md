@@ -53,7 +53,7 @@ There are several ways to install cwe_checker. The recommended way is to get cwe
 Another option is to pull the latest Docker container from [dockerhub](https://hub.docker.com/r/fkiecad/cwe_checker) (`docker pull fkiecad/cwe_checker`).
 
 If you plan to develop cwe_checker, it is recommended to build it using the provided `Makefile`. In this case you must ensure that all dependencies are fulfilled:
--   Ocaml 4.05.0
+-   Ocaml 4.07.1
 -   Opam 2.0.2
 -   dune >= 1.6
 -   BAP 1.6 (and its dependencies)
