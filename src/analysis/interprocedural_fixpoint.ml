@@ -45,6 +45,18 @@ module GraphBuilder = struct
       call_worklist = []
     }
 
+  (** explicitly treat a call as an extern call (even if it isn't) and add ExternCallStub edges accordingly *)
+  let add_call_edge_as_extern_call (builder: t) (call: Call.t) (source: Blk.t) ~(caller: Sub.t) : t =
+    match Call.return call with
+    | Some (Direct return_tid) ->
+        let return_block = Term.find_exn blk_t caller return_tid in
+        let edge = Graph.Edge.create (BlkEnd source) (BlkStart return_block) (ExternCallStub call) in
+        {builder with graph = Graph.Edge.insert edge builder.graph }
+    | None ->
+        builder (* a non-returning extern symbol gets no edge in the graph. TODO: Check that there are no conditional calls! Else I need a dummy edge here.*)
+    | Some (Indirect _) ->
+        failwith "Error: Function call with indirect return address encountered."
+
   (** add the block start and end nodes and the block edge to the graph. *)
   let add_block (builder: t) (block: Blk.t) : t =
     let graph = Graph.Node.insert (BlkStart block) builder.graph in
@@ -61,15 +73,7 @@ module GraphBuilder = struct
           | None -> Tid.name target_tid in
         if String.Set.mem (Cconv.parse_dyn_syms builder.project) func_name then
           (* This is an extern symbol. TODO: refactor this test to a function in symbol_utils *)
-          match Call.return call with
-          | Some (Direct return_tid) ->
-              let return_block = Term.find_exn blk_t caller return_tid in
-              let edge = Graph.Edge.create (BlkEnd source) (BlkStart return_block) (ExternCallStub call) in
-              {builder with graph = Graph.Edge.insert edge builder.graph }
-          | None ->
-              builder (* a non-returning extern symbol gets no edge in the graph. TODO: Check that there are no conditional calls! Else I need a dummy edge here.*)
-          | Some (Indirect _) ->
-              failwith "Error: Function call with indirect return address encountered."
+          add_call_edge_as_extern_call builder call source ~caller
         else
           (* This is an internal call. *)
           let target_sub = Term.find_exn sub_t (Project.program builder.project) target_tid in
@@ -139,7 +143,7 @@ module GraphBuilder = struct
 
 end
 
-let generate_fixpoint_cfg (project: Project.t) : Graph.t =
+let generate_program_fixpoint_cfg (project: Project.t) : Graph.t =
   let builder = GraphBuilder.empty project in
   let functions = Term.enum sub_t (Project.program project) in
   let builder = Seq.fold functions ~init:builder ~f:(fun builder sub ->
@@ -149,6 +153,13 @@ let generate_fixpoint_cfg (project: Project.t) : Graph.t =
   ) in
   builder.graph
 
+let generate_function_fixpoint_cfg (project: Project.t) (subfn: Sub.t) : Graph.t =
+  let builder = GraphBuilder.empty project in
+  let builder = GraphBuilder.add_subfunction_cfg builder subfn in
+  let builder = List.fold builder.call_worklist ~init:builder ~f:(fun builder (call, block, sub) ->
+    GraphBuilder.add_call_edge_as_extern_call builder call block ~caller:sub
+  ) in
+  builder.graph
 
 module type ProblemSig = sig
   type t

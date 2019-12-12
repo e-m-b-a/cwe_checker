@@ -83,7 +83,12 @@ module Graph : Graphlib.Std.Graph with type node = Node.t
 
 
 (** This function generates the control flow graph used for the interprocedural fixpoint algorithm for a given project. *)
-val generate_fixpoint_cfg: Project.t -> Graph.t
+val generate_program_fixpoint_cfg: Project.t -> Graph.t
+
+
+(** This function generates the control flow graph for a single function for intraprocedural analyses.
+    Each call in the function is treated as an extern call, i.e. all call edges are of type ExternCallStub. *)
+val generate_function_fixpoint_cfg: Project.t -> Sub.t -> Graph.t
 
 
 (** Each interprocedural fixpoint problem has to satisfy the interface defined in the ProblemSig module signature. *)
