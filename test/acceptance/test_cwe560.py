@@ -26,7 +26,7 @@ class TestCwe560(unittest.TestCase):
             self.target, self.target, 'x86', 'gcc', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip('FIXME!')
+    @unittest.skip('FIXME: duplicate main might be the cause of the error.')
     def test_cwe560_01_x86_clang(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
@@ -152,14 +152,12 @@ class TestCwe560(unittest.TestCase):
             self.target, self.target, 'ppc64le', 'clang', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
     def test_cwe560_01_x86_mingw_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'x86', 'mingw32-gcc', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
     def test_cwe560_01_x64_mingw_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(

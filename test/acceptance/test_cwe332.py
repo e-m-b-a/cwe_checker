@@ -32,14 +32,14 @@ class TestCwe332(unittest.TestCase):
             self.target, self.target, 'x86', 'clang', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: call of subroutine followed by indirect jmp.")
     def test_cwe332_01_arm_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'arm', 'gcc', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: call of subroutine followed by indirect jmp.")
     def test_cwe332_01_arm_clang(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
@@ -60,28 +60,28 @@ class TestCwe332(unittest.TestCase):
             self.target, self.target, 'aarch64', 'clang', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: idirect jmp")
     def test_cwe332_01_mips_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'mips', 'gcc', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: call of subroutine followed by indirect jmp.")
     def test_cwe332_01_mips_clang(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'mips', 'clang', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: indirect jmp")
     def test_cwe332_01_mipsel_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'mipsel', 'gcc', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: call of subroutine followed by indirect jmp.")
     def test_cwe332_01_mipsel_clang(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
@@ -95,28 +95,28 @@ class TestCwe332(unittest.TestCase):
             self.target, self.target, 'mips64', 'gcc', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: call of subroutine followed by indirect jmp.")
     def test_cwe332_01_mips64_clang(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'mips64', 'clang', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: indirect jmp")
     def test_cwe332_01_mips64el_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'mips64el', 'gcc', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: indirect jmp")
     def test_cwe332_01_mips64el_clang(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'mips64el', 'clang', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: subroutine call followed by indirect jmp. No symbols in disassembly.")
     def test_cwe332_01_ppc_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
@@ -137,28 +137,26 @@ class TestCwe332(unittest.TestCase):
             self.target, self.target, 'ppc64', 'clang', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: subroutine call followed by indirect jmp. No symbols in disassembly.")
     def test_cwe332_01_ppc64le_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'ppc64le', 'gcc', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
+    @unittest.skip("FIXME: subroutine call followed by indirect jmp. No symbols in disassembly.")
     def test_cwe332_01_ppc64le_clang(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'ppc64le', 'clang', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
     def test_cwe332_01_x86_mingw_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'x86', 'mingw32-gcc', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
     def test_cwe332_01_x64_mingw_gcc(self):
         expect_res = 1
         res = cwe_checker_testlib.execute_and_check_occurence(
