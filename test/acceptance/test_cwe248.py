@@ -98,14 +98,13 @@ class TestCwe248(unittest.TestCase):
             self.target, self.target, 'ppc64le', 'g++', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip("FIXME")
     def test_cwe248_01_x86_mingw_gcc(self):
         expect_res = 2
         res = cwe_checker_testlib.execute_and_check_occurence(
             self.target, self.target, 'x86', 'mingw32-g++', self.string)
         self.assertEqual(res, expect_res)
 
-    @unittest.skip('FIXME!')
+    @unittest.skip('FIXME: uncaught exception found twice in main: @maybe_catch')
     def test_cwe248_01_x64_mingw_gcc(self):
         expect_res = 2
         res = cwe_checker_testlib.execute_and_check_occurence(
