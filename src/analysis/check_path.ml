@@ -82,7 +82,7 @@ let block_has_callsite blk t =
                               | _ -> false
                               end)
 
-let collect_callsites (program : program term) (t : tid option) =
+let collect_callsites (program : program term) (t : tid) =
   Term.enum sub_t program
   |> Seq.filter_map ~f:(fun s -> if Term.enum blk_t s |>
                                Seq.exists ~f:(fun b -> block_has_callsite b t) then Some s else None)
