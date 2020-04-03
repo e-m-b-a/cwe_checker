@@ -27,7 +27,7 @@ let format_path get_source get_destination path tid_map =
       formated_full_path
     end
 
-let find_subfunction_name program name =
+let find_subfunction_name (program : program term) (name : string) : tid option =
   Term.enum sub_t program
   |> Seq.find_map ~f:(fun s -> Option.some_if (contains_substring name (Sub.name s)) (Term.tid s))
 
@@ -62,7 +62,7 @@ let verify source destination program : proof option =
                 else Graphlib.shortest_path (module CFG) g sc dc))) |>
     Option.map ~f:(fun p -> Sites p)
 
-let get_fst_tid_from_cwe_hit (cwe_hit: Log_utils.CweWarning.t) =
+let get_fst_tid_from_cwe_hit (cwe_hit: Log_utils.CweWarning.t) : tid option =
   match cwe_hit.tids with
   | [] -> None
   | hd :: _ -> Some (Bap.Std.Tid.from_string_exn hd)
@@ -76,13 +76,13 @@ let block_has_callsite blk t =
   Term.enum jmp_t blk |>
     Seq.exists ~f:(fun j ->
         match Jmp.kind j with
-        | Goto _ | Ret _ | Int (_,_) -> false 
+        | Goto _ | Ret _ | Int (_,_) -> false
         | Call destination -> begin match Call.target destination with
                               | Direct tid -> tid = t
                               | _ -> false
                               end)
 
-let collect_callsites program t =
+let collect_callsites (program : program term) (t : tid option) =
   Term.enum sub_t program
   |> Seq.filter_map ~f:(fun s -> if Term.enum blk_t s |>
                                Seq.exists ~f:(fun b -> block_has_callsite b t) then Some s else None)
@@ -96,7 +96,7 @@ let sub_has_tid sub tid =
                                                           | `Jmp j -> Term.tid j = tid
                                                           | `Phi p -> Term.tid p = tid ))
 
-let find_sub_tid_of_term_tid program tid =
+let find_sub_tid_of_term_tid (program : program term) (tid : tid option) : tid option =
   match tid with
   | Some t -> let s = Term.enum sub_t program
                       |> Seq.find ~f:(fun s -> sub_has_tid s t) in
@@ -112,7 +112,7 @@ let log_path p source source_tid destination tid_map =
   let destination_addr = Address_translation.translate_tid_to_assembler_address_string
                                                     (cwe_hit_fst_addr destination) tid_map in
   begin match p with
-  | Calls p -> 
+  | Calls p ->
      let path_str = format_path CG.Edge.src CG.Edge.dst p tid_map in
      let current_path = Log_utils.check_path_factory source source_addr destination_addr destination_addr ~path:[] ~path_str:path_str in
      Log_utils.collect_check_path current_path
@@ -123,7 +123,7 @@ let log_path p source source_tid destination tid_map =
 
 let verify_one program tid_map source destination source_tid destination_tid =
   match verify source_tid destination_tid program with
-           | None -> () 
+           | None -> ()
            | Some p -> log_path p source source_tid destination tid_map
 
 let find_source_sink_pathes source destination program tid_map =
@@ -132,9 +132,9 @@ let find_source_sink_pathes source destination program tid_map =
       | Some (callsite_tid, destination_tid) ->
          begin
            collect_callsites program callsite_tid
-           |> Seq.iter ~f:(fun source_tid -> verify_one program tid_map source destination source_tid destination_tid ) 
+           |> Seq.iter ~f:(fun source_tid -> verify_one program tid_map source destination source_tid destination_tid )
          end
-          
+
 
 let check_path prog tid_map input_functions cwe_hits =
   List.iter input_functions ~f:(fun f ->
